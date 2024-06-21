@@ -2,6 +2,8 @@ const express = require("express");
 const { MongoClient } = require("mongodb");
 const dotenv = require("dotenv");
 const cors = require("cors"); // Add CORS
+const path = require("path");
+const bodyParser = require('body-parser');
 
 dotenv.config();
 const app = express();
@@ -76,5 +78,24 @@ app.post("/signup", async (req, res) => {
         res.status(200).json({ request: "Signup success " + signup });
     } catch (e) {
         res.status(500).json({ error: "Signup error" });
+    }
+});
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+app.get("/add-account", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "pages", "add_account.html"));
+});
+
+app.post("/add-account", async (req, res) => {
+    try {
+        let collection = await db.collection(col_accounts);
+        let account = req.body;
+        let result = await collection.insertOne(account);
+
+        res.status(200).json({ request: "Insert success username: " + account.username });
+    } catch (e) {
+        res.status(500).json({ error: "Can't add Account. Error is occur", detailed: e });
     }
 });
