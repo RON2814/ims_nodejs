@@ -1,0 +1,12 @@
+# to createIndex to search through database
+db.products.createIndex({ product_name: "text" }, { name: "product_text" })
+
+# to use the search:
+db.products.find({ $text: { $search: "search_term" } });
+
+# I can also use sort, limit, meta, etc.
+.project({score: {$meta: "textScore", _id: 0}})
+.sort({score: {$meta: "textScore"}}) # this will make the most relevant search
+.limit(<int>) # if needed to limit the output <int> = how many to you want
+
+
